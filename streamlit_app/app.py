@@ -1,15 +1,45 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
+import os
 import pickle
+import pandas as pd
+import streamlit as st
 
-# Load trained model
+# ---------------------------------------------------
+# Page Configuration
+# ---------------------------------------------------
 
-model = pickle.load(
-    open("../models/delivery_time_model.pkl", "rb")
+st.set_page_config(
+    page_title="DeliverIQ",
+    page_icon="🚚",
+    layout="centered"
 )
 
-# App title
+# ---------------------------------------------------
+# Load Model & Training Columns
+# ---------------------------------------------------
+
+BASE_DIR = os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__))
+)
+
+model_path = os.path.join(
+    BASE_DIR,
+    "models",
+    "delivery_time_model.pkl"
+)
+
+columns_path = os.path.join(
+    BASE_DIR,
+    "models",
+    "model_columns.pkl"
+)
+
+model = pickle.load(open(model_path, "rb"))
+
+model_columns = pickle.load(open(columns_path, "rb"))
+
+# ---------------------------------------------------
+# App Title
+# ---------------------------------------------------
 
 st.title("🚚 DeliverIQ")
 
@@ -17,13 +47,16 @@ st.subheader("Food Delivery Time Prediction System")
 
 st.write(
     """
-    This machine learning application predicts
-    estimated food delivery time based on
-    delivery conditions.
+    Predict estimated food delivery time using
+    machine learning based on delivery conditions.
     """
 )
 
+st.markdown("---")
+
+# ---------------------------------------------------
 # User Inputs
+# ---------------------------------------------------
 
 delivery_person_age = st.number_input(
     "Delivery Person Age",
@@ -32,54 +65,66 @@ delivery_person_age = st.number_input(
     value=25
 )
 
-delivery_person_ratings = st.number_input(
+delivery_person_ratings = st.slider(
     "Delivery Person Ratings",
     min_value=1.0,
     max_value=5.0,
-    value=4.5
+    value=4.5,
+    step=0.1
 )
 
 distance = st.number_input(
-    "Distance",
+    "Distance (in km)",
     min_value=0.0,
     value=5.0
 )
 
+# ---------------------------------------------------
 # Vehicle Type
+# ---------------------------------------------------
 
 vehicle_type = st.selectbox(
     "Type of Vehicle",
-    ["motorcycle", "scooter"]
+    [
+        "motorcycle",
+        "scooter",
+        "electric_scooter"
+    ]
 )
 
+# ---------------------------------------------------
 # Order Type
+# ---------------------------------------------------
 
 order_type = st.selectbox(
     "Type of Order",
-    ["Snack", "Drinks", "Buffet", "Meal"]
+    [
+        "Snack",
+        "Drinks",
+        "Buffet",
+        "Meal"
+    ]
 )
 
-# Prediction Button
+st.markdown("---")
+
+# ---------------------------------------------------
+# Prediction
+# ---------------------------------------------------
 
 if st.button("Predict Delivery Time"):
 
-    # Load training columns
-
-    model_columns = pickle.load(
-        open("../models/model_columns.pkl", "rb")
-    )
-
-    # Create empty dataframe with training columns
+    # Create empty dataframe with all training columns
 
     input_data = pd.DataFrame(
         columns=model_columns
     )
 
-    # Add one empty row
+    # Add single empty row
 
     input_data.loc[0] = 0
 
-    # Fill numeric values
+    # Fill numerical columns
 
     input_data["Delivery_person_Age"] = delivery_person_age
 
@@ -108,5 +153,26 @@ if st.button("Predict Delivery Time"):
     # Display result
 
     st.success(
-        f"Estimated Delivery Time: {prediction[0]:.2f} minutes"
+        f"🚀 Estimated Delivery Time: {prediction[0]:.2f} minutes"
     )
+
+    # Additional insights
+
+    if prediction[0] <= 20:
+        st.info("⚡ Fast delivery expected")
+
+    elif prediction[0] <= 40:
+        st.info("🛵 Moderate delivery time expected")
+
+    else:
+        st.warning("⏳ Possible delivery delay expected")
+
+# ---------------------------------------------------
+# Footer
+# ---------------------------------------------------
+
+st.markdown("---")
+
+st.caption(
+    "Built using Streamlit & Machine Learning | DeliverIQ"
+)
