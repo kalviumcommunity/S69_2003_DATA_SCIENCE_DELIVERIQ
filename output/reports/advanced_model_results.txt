@@ -1,0 +1,17 @@
+Advanced Model Results
+
+Models Used:
+- Decision Tree Regressor
+- Random Forest Regressor
+
+Evaluation:
+Random Forest achieved better performance compared to Decision Tree.
+
+Hyperparameter Tuning:
+GridSearchCV was used to optimize model parameters.
+
+Final Selected Model:
+Random Forest Regressor
+
+Reason:
+Higher R2 Score and better prediction capability.
