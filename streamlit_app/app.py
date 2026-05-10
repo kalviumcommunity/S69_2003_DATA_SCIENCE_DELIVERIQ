@@ -63,21 +63,43 @@ order_type = st.selectbox(
 
 if st.button("Predict Delivery Time"):
 
-    # Create input dataframe
+    # Load training columns
 
-    input_data = pd.DataFrame({
-        "Delivery_person_Age": [delivery_person_age],
-        "Delivery_person_Ratings": [delivery_person_ratings],
-        "Restaurant_latitude": [0],
-        "Restaurant_longitude": [0],
-        "Delivery_location_latitude": [0],
-        "Delivery_location_longitude": [0],
-        "distance": [distance],
-        "Type_of_order_Drinks": [1 if order_type == "Drinks" else 0],
-        "Type_of_order_Meal": [1 if order_type == "Meal" else 0],
-        "Type_of_order_Snack": [1 if order_type == "Snack" else 0],
-        "Type_of_vehicle_scooter": [1 if vehicle_type == "scooter" else 0]
-    })
+    model_columns = pickle.load(
+        open("../models/model_columns.pkl", "rb")
+    )
+
+    # Create empty dataframe with training columns
+
+    input_data = pd.DataFrame(
+        columns=model_columns
+    )
+
+    # Add one empty row
+
+    input_data.loc[0] = 0
+
+    # Fill numeric values
+
+    input_data["Delivery_person_Age"] = delivery_person_age
+
+    input_data["Delivery_person_Ratings"] = delivery_person_ratings
+
+    input_data["distance"] = distance
+
+    # Encode vehicle type
+
+    vehicle_column = f"Type_of_vehicle_{vehicle_type}"
+
+    if vehicle_column in input_data.columns:
+        input_data[vehicle_column] = 1
+
+    # Encode order type
+
+    order_column = f"Type_of_order_{order_type}"
+
+    if order_column in input_data.columns:
+        input_data[order_column] = 1
 
     # Make prediction
 
@@ -88,5 +110,3 @@ if st.button("Predict Delivery Time"):
     st.success(
         f"Estimated Delivery Time: {prediction[0]:.2f} minutes"
     )
-
-    
