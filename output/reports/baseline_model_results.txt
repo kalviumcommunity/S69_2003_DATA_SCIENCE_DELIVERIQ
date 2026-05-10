@@ -1,0 +1,13 @@
+Baseline Model Results
+
+Model Used:
+Linear Regression
+
+Evaluation Metrics:
+MAE: 6.6101517160517895
+MSE: 69.91563757952207
+RMSE: 8.36155712648799
+R2 Score: 0.20258755274668605
+
+Observations:
+The model provides baseline delivery time predictions and serves as the foundation for advanced model comparison.
