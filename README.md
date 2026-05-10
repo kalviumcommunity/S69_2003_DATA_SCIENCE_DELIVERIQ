@@ -6,7 +6,7 @@
 https://deliveriq.netlify.app/
 
 ### 🤖 Machine Learning App
-<your-streamlit-link>
+https://deliver-iq.streamlit.app/
 
 ---
 
